@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUSQUEDA</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">WEBMOVIE</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html"><i class="fas fa-home"></i> Inicio<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="valoradas.html"><i class="fas fa-fire"></i> Más Valoradas</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="GET" action="busqueda.html">
+                <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" name="query">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+        </div>
+    </nav>
+
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Encontraras las ultimas Peliculas y sus Descripciones!!</h1>
+            <p class="lead text-muted">Encuentra todo en peliculas del cine mundial</p>
+        </div>
+
+    </section>
+
+    <div class="row container-fluid">
+        <div class="col-sm-2">
+            <b>RESULTADOS DE BUSQUEDA: </b>
+            <div class="list-group" id="generos">
+            </div>
+        </div>
+        <div class="container">
+            <div class="row ng-scope">
+                <div class="col-md-9 col-md-pull-3" id="resultados">
+
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-white">
+            <br>
+            <div class="row">
+                <div class="col-12 col-md-4 col-lg-2">
+                    <h4>Navegación</h4>
+                    <p><i class="fas fa-home"></i> <a href="index.html">Inicio</a></p>
+                    <p><i class="fas fa-fire"></i> <a href="#">Populares</a></p>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <h4 id="contacto">Contacto</h4>
+                    <p><i class="fas fa-search-location"></i> Angol</p>
+                    <p><i class="fas fa-thumbtack"></i> Direcci&oacute;n: Avenida 12345</p>
+                    <p><i class="fas fa-phone"></i> Tel&eacute;fonos: 9999999</p>
+                    <p><i class="fas fa-envelope-open"></i> Email: email@email.com</p>
+                </div>
+                <div class="col-12 col-md-4 col-lg-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/all.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            var query = getParameterByName('query');
+            traeBusqueda(query);
+        });
+
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        function traeBusqueda(query) {
+
+            $.ajax({
+                url: 'https://api.themoviedb.org/3/search/movie?api_key=a2206509622d57a6ed7e5526a8bcef32&language=es-ES&page=1&include_adult=false&query=' + query + '',
+                type: 'GET',
+                dataType: 'json',
+                success: function(result, status, xhr) {
+                    let html = '';
+                    for (let item of result.results) {
+                        html += '<section class="search-result-item">';
+                        html += '<a class="image-link" href="#"><img class="image" src="https://image.tmdb.org/t/p/w500' + item.poster_path + '"></a>';
+                        html += '<div class="search-result-item-body">';
+                        html += '<div class="row">';
+                        html += '<div class="col-sm-9">';
+                        html += '<h4 class="search-result-item-heading"><a href="#">' + item.title + '</a></h4>';
+                        html += '<p class="info">' + item.release_date + '</p>';
+                        html += '<p class="description">' + item.overview.substring(0, 300) + '.....</p>';
+                        html += '</div>';
+                        html += '<div class="col-sm-3 text-align-center">';
+                        html += '<p class="value3 mt-sm">' + item.vote_average + ' / 10</p>';
+                        html += '<a class="btn btn-primary btn-info btn-sm" href="pelicula.html?idPelicula=' + item.id + '">VER MAS</a>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</section>';
+                    }
+
+                    $('#resultados').html(html);
+                },
+                error: function(xhr, status) {
+                    console.log('fallo la solicitud');
+                }
+            })
+
+        }
+    </script>
+</body>
+
+</html>
